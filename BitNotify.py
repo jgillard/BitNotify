@@ -22,8 +22,6 @@ threshold = args.threshold
 repeatFreq = 30
 repeatCount = 10
 
-print threshold
-
 def getBitstampUSD(rate):
     try:
         data = requests.get(URL_bitstamp, timeout = 10).json()
