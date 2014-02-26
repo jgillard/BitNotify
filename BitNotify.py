@@ -10,8 +10,8 @@ from temboo.core.session import TembooSession
 #os.system("mode con cols=24 lines=20")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("threshold", help="the margin percentage to trigger a DM",
-                    type=int)
+parser.add_argument("--threshold", help="the margin percentage to trigger a DM",
+                    type=int, default=7)
 args = parser.parse_args()
 
 URL_bitstamp = 'https://www.bitstamp.net/api/ticker/'
@@ -21,6 +21,8 @@ URL_Bitty = 'https://bittylicious.com/api/v1/quote/BTC/GB/GBP/BANK/1'
 threshold = args.threshold
 repeatFreq = 30
 repeatCount = 10
+
+print threshold
 
 def getBitstampUSD(rate):
     try:
