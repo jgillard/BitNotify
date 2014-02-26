@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
-import requests
+import os,requests,argparse
 from time import sleep
 from datetime import datetime
 
@@ -10,11 +9,16 @@ from temboo.core.session import TembooSession
 
 #os.system("mode con cols=24 lines=20")
 
+parser = argparse.ArgumentParser()
+parser.add_argument("threshold", help="the margin percentage to trigger a DM",
+                    type=int)
+args = parser.parse_args()
+
 URL_bitstamp = 'https://www.bitstamp.net/api/ticker/'
 URL_USDGBP = 'http://rate-exchange.appspot.com/currency?from=USD&to=GBP'
 URL_Bitty = 'https://bittylicious.com/api/v1/quote/BTC/GB/GBP/BANK/1'
 
-threshold = 5
+threshold = args.threshold
 repeatFreq = 30
 repeatCount = 10
 
