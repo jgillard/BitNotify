@@ -10,7 +10,7 @@ from temboo.core.session import TembooSession
 #os.system("mode con cols=24 lines=20")
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--threshold", help="the margin percentage to trigger a DM",
+parser.add_argument("-%", "--threshold", help="the margin percentage to trigger a DM",
                     type=int, default=7)
 args = parser.parse_args()
 
