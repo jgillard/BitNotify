@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+debug = True
+
 import os,requests,argparse
 from time import sleep
 from datetime import datetime
@@ -12,12 +14,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-%", "--threshold", help="the margin percentage to trigger a DM",
                     type=int, default=4)
 args = parser.parse_args()
+threshold = args.threshold
 
 URL_bitstamp = 'https://www.bitstamp.net/api/ticker/'
 URL_USDGBP = 'http://openexchangerates.org/api/latest.json?app_id=f6eb23a351d74b44a1ae9ff7561c4a0e'
 URL_Bitty = 'https://bittylicious.com/api/v1/quote/BTC/GB/GBP/BANK/1'
 
-threshold = args.threshold
 repeatTime = 30
 
 def twitAuth():
@@ -38,68 +40,73 @@ def getBitstampUSD(rate):
         return 1
  
     GBP_last = float(USD_last) / rate
-    print('Last price   = $' + USD_last)
-    print(u'And in GBP   = £%.2f' % GBP_last)
+    if debug: print('Last price   = $' + USD_last)
+    if debug: print(u'And in GBP   = £%.2f' % GBP_last)
     return GBP_last
 
-def printUSDGBP():
+def getUSDGBP():
     data = requests.get(URL_USDGBP).json()
     USDGBP = data['rates']['GBP']
     inv = 1/float(USDGBP)
-    print('USD/GBP rate = $%.3f\n' % inv)
+    if debug: print('USD/GBP rate = $%.3f\n' % inv)
     return inv
       
-def printBitty():
+def getBitty():
     data = requests.get(URL_Bitty).json()
     Bitty_last = data['totalPrice']
-    print(u'Bittylicious = £%.2f' % Bitty_last)
+    if debug: print(u'Bittylicious = £%.2f' % Bitty_last)
     return Bitty_last
 
 def bittyDelta(stamp, bitty, time):
     delta = bitty - stamp
-    print(u'Bitty_Delta  = £%.2f' % delta)
+    if debug: print(u'Bitty_Delta  = £%.2f' % delta)
     percent = ( bitty / stamp * 100 ) - 100
-    print(u'             = %.2f%%' % percent)
+    if debug: print(u'             = %.2f%%' % percent)
     return percent
 
 def sendDM(time, info):
     message = time, info
     t.direct_messages.new(user = 'jamesmgillard', text = message)
     
-def printTime():
+def getTime():
     now = datetime.now()
     time = now.strftime('%d/%m/%Y %H:%M:%S')
-    print(time)
+    if debug: print(time)
     return time
 
 
-rate = printUSDGBP()
+rate = getUSDGBP()
 t = twitAuth()
 histList = [0,0,0,0,0,0,0,0,0,0]
+repeatTemp = 0
 while True:          
-    time = printTime()
+    time = getTime()
     stampGBP = getBitstampUSD(rate)   
-    bittyGBP = printBitty()     
+    bittyGBP = getBitty()     
     percent = bittyDelta(stampGBP, bittyGBP, time)
     
     for i in range(0,9):
         histList[i] = histList[i+1]
     histList[9] = percent
-    print(histList)
+    if debug: print(histList)
     
     total = 0
     for i in range(0,10):
         total += histList[i]
     avg = total / 10.0
-    print(avg)
+    if debug: print(avg)
+    if debug: print(repeatTemp)
 
-    if avg >= 5.0 and repeatTime > 0:
-        repeatTime -= 1
+    if avg < threshold:
+        repeatTemp = 0
+
+    if avg >= threshold and repeatTemp > 0:
+        repeatTemp -= 1
     
-    if avg >= 5.0 and repeatTime == 0:
+    if avg >= threshold and repeatTemp == 0:
         print("DM sent")
         sendDM(time, "BL:%.2f BS:%.2f ---> %.2f%%" % (bittyGBP,stampGBP,percent))
-        repeatTime = 30
+        repeatTemp = repeatTime
     
     print('\n')
     sleep(60)
