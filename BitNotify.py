@@ -6,15 +6,17 @@ import os,requests,argparse
 from time import sleep
 from datetime import datetime
 from twitter import *
+
 #os.system("mode con cols=24 lines=20")
 
 #NEED SOME TWEETING ON ERROR MESSAGES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-%", "--threshold", help="the margin percentage to trigger a DM",
+parser.add_argument("-t", "--threshold", help="the margin percentage to trigger a DM",
                     type=int, default=4)
 args = parser.parse_args()
 threshold = args.threshold
+if (debug): print('threshold: ', threshold)
 
 URL_bitstamp = 'https://www.bitstamp.net/api/ticker/'
 URL_USDGBP = 'http://openexchangerates.org/api/latest.json?app_id=f6eb23a351d74b44a1ae9ff7561c4a0e'
@@ -95,7 +97,7 @@ while True:
         total += histList[i]
     avg = total / 10.0
     if debug: print(avg)
-    if debug: print(repeatTemp)
+    if debug: print('repeatTemp: ', repeatTemp)
 
     if avg < threshold:
         repeatTemp = 0
