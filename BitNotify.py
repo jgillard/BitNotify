@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-debug = True
-
 import os,requests,argparse
 from time import sleep
 from datetime import datetime
@@ -14,8 +12,13 @@ from twitter import *
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--threshold", help="the margin percentage to trigger a DM",
                     type=int, default=4)
+parser.add_argument("-d", "--debug", help="we got bugs, irradicate bugs with bug spray / 0",
+                    type=int, default=0)
+                    
 args = parser.parse_args()
 threshold = args.threshold
+debug = args.debug
+
 if (debug): print('threshold: ', threshold)
 
 URL_bitstamp = 'https://www.bitstamp.net/api/ticker/'
